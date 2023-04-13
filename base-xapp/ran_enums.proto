@@ -1,0 +1,8 @@
+// this file enumerates RAN write function targets (i.e. parameters that are modified by ran write requests)
+//
+syntax = "proto2";
+
+enum RAN_write_targets{
+    GNB_ID = 0;
+    SOMETHING_ELSE = 1;
+} 

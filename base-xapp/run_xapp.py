@@ -1,5 +1,5 @@
 import logging
-from xapp_control import *
+import  xapp_control
 import xapp_control_ricbypass
 from  ran_messages_pb2 import *
 from time import sleep
@@ -21,7 +21,8 @@ def main():
         master_mess = RAN_message()
         master_mess.msg_type = RAN_message_type.INDICATION_REQUEST
         inner_mess = RAN_indication_request()
-        inner_mess.target_params.extend([RAN_parameter.GNB_ID, RAN_parameter.UE_LIST])
+        inner_mess.target_params.extend([RAN_parameter.GNB_ID, RAN_parameter.UE_TOA_LIST])
+        #inner_mess.target_params.extend([RAN_parameter.GNB_ID, RAN_parameter.UE_LIST])
         #inner_mess.target_params.extend([RAN_parameter.GNB_ID])
         master_mess.ran_indication_request.CopyFrom(inner_mess)
         buf = master_mess.SerializeToString()
@@ -42,12 +43,13 @@ def main():
         print(ran_ind_resp)
 
         exit()
-
-    control_sck = open_control_socket(4200)
+        
+    # else: # connect to RIC
+    control_sck = xapp_control.open_control_socket(4200)
 
     while True:
         logging.info("loop again")
-        data_sck = receive_from_socket(control_sck)
+        data_sck = xapp_control.receive_from_socket(control_sck)
         if len(data_sck) <= 0:
             logging.info("leq 0 data")
             if len(data_sck) == 0:
@@ -58,7 +60,7 @@ def main():
         else:
             logging.info('Received data: ' + repr(data_sck))
             logging.info("Sending something back")
-            send_socket(control_sck, "test test test")
+            xapp_control.send_socket(control_sck, "test test test")
 
 
 if __name__ == '__main__':
