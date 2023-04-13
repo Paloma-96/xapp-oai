@@ -1,2 +1,2 @@
 #!/bin/bash
-protoc -I=. --c_out=. ./ran_messages.proto
+protoc -I=. --c_out=. ./oai-oran-protolib/ran_messages.proto
