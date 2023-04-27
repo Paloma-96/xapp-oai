@@ -4,6 +4,7 @@ import socketserver
 import string
 
 localIP = "127.0.0.1"
+remoteIP = "10.75.10.77"
 in_port = 6600
 out_port = 6655
 maxSize = 4096
@@ -37,12 +38,12 @@ def receive_from_socket():
     print("received {} bytes".format(len(bytesAddressPair[0])))
     return bytesAddressPair[0]
 
-def send_to_socket(data):
+def send_to_socket(data, ip):
     global UDPClientSocketOut
     global initialized
     if not initialized_tx:
         initialize_tx()
     global UDPClientSocketOut
-    UDPClientSocketOut.sendto(data, (localIP,out_port))
+    UDPClientSocketOut.sendto(data, (ip,out_port))
     
 

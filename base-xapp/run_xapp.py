@@ -5,6 +5,9 @@ from  ran_messages_pb2 import *
 from time import sleep
 BYPASS_RIC = True
 
+localIP = "127.0.0.1"
+remoteIP = "10.75.10.77"
+
 def main():
     # configure logger and console output
     logging.basicConfig(level=logging.DEBUG, filename='/home/xapp-logger.log', filemode='a+',
@@ -21,21 +24,24 @@ def main():
         master_mess = RAN_message()
         master_mess.msg_type = RAN_message_type.INDICATION_REQUEST
         inner_mess = RAN_indication_request()
-        inner_mess.target_params.extend([RAN_parameter.GNB_ID, RAN_parameter.UE_TOA_LIST])
+        inner_mess.target_params.extend([RAN_parameter.GNB_ID, RAN_parameter.TOA_LIST])
         #inner_mess.target_params.extend([RAN_parameter.GNB_ID, RAN_parameter.UE_LIST])
         #inner_mess.target_params.extend([RAN_parameter.GNB_ID])
         master_mess.ran_indication_request.CopyFrom(inner_mess)
         buf = master_mess.SerializeToString()
-        xapp_control_ricbypass.send_to_socket(buf)
+        xapp_control_ricbypass.send_to_socket(buf, remoteIP)
+        xapp_control_ricbypass.send_to_socket(buf, localIP)
         print("request sent, now waiting for incoming answers")
 
         while True:
             r_buf = xapp_control_ricbypass.receive_from_socket()
+            # PALOMA HACK qui si implementa la logica di ricezione delle risposte
             ran_ind_resp = RAN_indication_response()
             ran_ind_resp.ParseFromString(r_buf)
             print(ran_ind_resp)
             sleep(1)
-            xapp_control_ricbypass.send_to_socket(buf)
+            xapp_control_ricbypass.send_to_socket(buf, remoteIP)
+            xapp_control_ricbypass.send_to_socket(buf, localIP)
 
         r_buf = xapp_control_ricbypass.receive_from_socket()
         ran_ind_resp = RAN_indication_response()
