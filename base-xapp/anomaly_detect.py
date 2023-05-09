@@ -126,6 +126,19 @@ time_window = 5  # seconds
 window_size = 5
 threshold = 5
 
+gnb_positions = {
+    0: np.array([0, 0]),
+    1: np.array([100, 0]),
+    2: np.array([50, 100])
+}
+
+# Plotting
+fig, ax = plt.subplots()
+
+# Plot gNB positions
+for gnb_id, pos in gnb_positions.items():
+    plt.scatter(pos[0], pos[1], label=f'gNB {gnb_id}', marker='^', s=150)
+
 def xgboost_model(train_data, next_row):
     X_train = train_data[['gnb_id', 'snr']].values
     y_train = train_data['toa_val'].values
@@ -164,6 +177,7 @@ def linear_regression_model(train_data, next_row):
     return y_pred
 
 alert_indexes = []
+timestamps_done = []
 
 for i in range(window_size, len(df)):
     train_data = df.iloc[i - window_size:i]
@@ -174,72 +188,26 @@ for i in range(window_size, len(df)):
 
     next_row = df.iloc[i]
     # Choose the ML algorithm: xgboost_model or lstm_model
-    y_pred = lstm_model(train_data, next_row)
+    y_pred = xgboost_model(train_data, next_row)
     
     y_test = next_row['toa_val']
 
     alert = generate_alert(y_test, y_pred, threshold)
-    if alert:
-        print(alert)
-        alert_indexes.append(i)  # Add the index of the row that generated an alert
+    if df.iloc[i]['timestamp'] not in timestamps_done:
+        timestamps_done.append(df.iloc[i]['timestamp'])
+        toa_vals = df.loc[df['timestamp'] == df.iloc[i]['timestamp']]['toa_val'].values
+        gnb_ids = df.loc[df['timestamp'] == df.iloc[i]['timestamp']]['gnb_id'].values
+        gnb_coords = [gnb_positions[id] for id in gnb_ids]
+        user_position = triangulate(gnb_coords, toa_vals)
+        print(f"User position at: {user_position}")
 
+        if alert:
+            print(alert)
+            plt.scatter(user_position[0], user_position[1], label='UE Alert', marker='X', s=150)
+            alert_indexes.append(i)  # Add the index of the row that generated an alert
+        else:
+            plt.scatter(user_position[0], user_position[1], label='UE Alert', marker='o', s=150)
 
-gnb_positions = {
-    0: np.array([0, 0]),
-    1: np.array([100, 0]),
-    2: np.array([50, 100])
-}
-
-# Plotting
-fig, ax = plt.subplots()
-
-# Plot gNB positions
-for gnb_id, pos in gnb_positions.items():
-    plt.scatter(pos[0], pos[1], label=f'gNB {gnb_id}', marker='^', s=150)
-
-timestamps_done = []
-# check the toa_val and snr values in a 5 seconds time window, if you find a difference of both values > 3, then print an alert
-for gnb_id, group in df.groupby('gnb_id'):
-    anomaly_index = -1
-    #print(gnb_id)
-    if len(group) >= 0:
-        for i in range(len(group)):
-
-            # check if it's the last one
-            if i == 0:
-                continue
-            
-            if anomaly_index != -1:
-                # check if the difference between the timestamps is less than 5 seconds
-                diff = (group.iloc[i]['timestamp'] - group.iloc[anomaly_index]['timestamp']).seconds
-                if diff <= time_window:
-                    toa_val_diff = abs(group.iloc[anomaly_index - 1]['toa_val'] - group.iloc[i]['toa_val'])
-                    snr_diff = abs(group.iloc[anomaly_index - 1]['snr'] - group.iloc[i]['snr'])
-
-            else:
-                diff = (group.iloc[i]['timestamp'] - group.iloc[i-1]['timestamp']).seconds
-                if diff <= time_window:
-                    toa_val_diff = abs(group.iloc[i]['toa_val'] - group.iloc[i - 1]['toa_val'])
-                    snr_diff = abs(group.iloc[i]['snr'] - group.iloc[i - 1]['snr']) 
-
-            if group.iloc[i]['timestamp'] not in timestamps_done:
-                timestamps_done.append(group.iloc[i]['timestamp'])
-
-                toa_vals = df.loc[df['timestamp'] == group.iloc[i]['timestamp']]['toa_val'].values
-                gnb_ids = df.loc[df['timestamp'] == group.iloc[i]['timestamp']]['gnb_id'].values
-                gnb_coords = [gnb_positions[id] for id in gnb_ids]
-                user_position = triangulate(gnb_coords, toa_vals)
-                print(f"User position at {gnb_id}: {user_position}")
-
-                if toa_val_diff > 5:
-                    if anomaly_index == -1:
-                        anomaly_index = i
-                    print(f"ALERT: gNB {gnb_id}: anomaly in the toa_val and snr values at {group.iloc[i]['timestamp']}")
-                    plt.scatter(user_position[0], user_position[1], label='UE Alert', marker='X', s=150)
-                else:
-                    print(f"INFO: gNB {gnb_id}: normal toa_val at {group.iloc[i]['timestamp']}")
-                    plt.scatter(user_position[0], user_position[1], label='UE', marker='o', s=150)
-             
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.xlim([-10, 110])
