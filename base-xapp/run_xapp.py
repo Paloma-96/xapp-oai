@@ -25,7 +25,8 @@ def db_init():
     
 
 localIP = "127.0.0.1"
-remoteIP = "10.75.10.77"
+remoteIP1 = "10.75.10.77"
+remoteIP2 = "10.75.9.184"
 
 GNB_ID = 1
 TOA_LIST = 4
@@ -80,7 +81,8 @@ def main():
         #inner_mess.target_params.extend([RAN_parameter.GNB_ID])
         master_mess.ran_indication_request.CopyFrom(inner_mess)
         buf = master_mess.SerializeToString()
-        xapp_control_ricbypass.send_to_socket(buf, remoteIP)
+        xapp_control_ricbypass.send_to_socket(buf, remoteIP1)
+        xapp_control_ricbypass.send_to_socket(buf, remoteIP2)
         xapp_control_ricbypass.send_to_socket(buf, localIP)
         print("request sent, now waiting for incoming answers")
 
@@ -123,7 +125,8 @@ def main():
             conn.commit()
             #conn.close()
 
-            xapp_control_ricbypass.send_to_socket(buf, remoteIP)
+            xapp_control_ricbypass.send_to_socket(buf, remoteIP1)
+            xapp_control_ricbypass.send_to_socket(buf, remoteIP2)
             xapp_control_ricbypass.send_to_socket(buf, localIP)
 
         r_buf = xapp_control_ricbypass.receive_from_socket()
