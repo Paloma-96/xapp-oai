@@ -16,6 +16,9 @@ from sklearn.metrics import accuracy_score, classification_report
 from collections import defaultdict
 import random
 import tensorflow as tf
+import seaborn as sns
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from keras.utils import to_categorical
 
 def DBConnect():
     conn = sqlite3.connect('/home/ipalama/work/OAI-colosseum-ric-integration-paloma/xapp-oai/base-xapp/toa_measurements.db')
@@ -253,11 +256,37 @@ def same_spoof_index(df0, df1, df2):
             df1.at[index, 'spoofed'] = 1
     return df0, df1, df2
 
+# Define a function to calculate the MAD for a given window
+def mad(window):
+    median = window.median()
+    deviations = abs(window - median)
+    return deviations.median()
+
+#create a function that take df and return df with rolling mean, standard deviation and MAD
+def rolling_mean_std_mad(df, window_size):
+    df['rolling_mean_snr'] = df['snr'].rolling(window=window_size, min_periods=1).mean()
+
+    df['rolling_std_snr'] = df['snr'].rolling(window=window_size, min_periods=1).std()
+    df['rolling_std_snr'] = df['rolling_std_snr'].fillna(-1)
+
+    df['rolling_mad_snr'] = df['snr'].rolling(window=window_size, min_periods=1).apply(mad)
+    df['rolling_mad_snr'] = df['rolling_mad_snr'].fillna(-1)
+
+    df['rolling_mean_toa'] = df['toa_val'].rolling(window=window_size, min_periods=1).mean()
+
+    df['rolling_std_toa'] = df['toa_val'].rolling(window=window_size, min_periods=1).std()
+    df['rolling_std_toa'] = df['rolling_std_toa'].fillna(-1)
+    
+    df['rolling_mad_toa'] = df['toa_val'].rolling(window=window_size, min_periods=1).apply(mad)
+    df['rolling_mad_toa'] = df['rolling_mad_toa'].fillna(-1)
+    return df
+
 # Processing phases
 def phase_1(window_size, train_df, test_df):
 
     #print(f"train_df: {train_df}")
     #print(f"test_df: {test_df}")
+
     rolling_df = train_df.rolling(window=window_size, min_periods=window_size)
     train_df.reset_index(drop=True, inplace=True)
 
@@ -330,6 +359,8 @@ running_speed = 8 * 1000 / 3600  # 8 km/h in meters per second
 emission_speed = 299792458  # Speed of light in meters per second
 duration = 1000  # seconds
 sample_rate = 61.44 * 1e6  # 61.44 MSps in samples per second
+window_size = 10
+threshold = 5
 
 toa_dataset_walking, toa_dataset_running, user_positions_walking, user_positions_running = estimate_toa_random_path(user_data, gnb_positions, walking_speed, running_speed, emission_speed, duration, sample_rate)
 
@@ -352,21 +383,40 @@ data_walking['timestamp'] = data_walking['timestamp'].apply(lambda x: round(x))
 percentage = 30
 Spoof_magnitude = 10
 
+
+
 train_data_walking = new_exp(data_walking)
 train_data_running = new_exp(data_running)
 
 spoofed_train_data_walking = spoof_dataframe(train_data_walking, percentage, Spoof_magnitude, 1)
 spoofed_train_data_running = spoof_dataframe(train_data_running, percentage, Spoof_magnitude, 1)
 
-window_size = 10
-threshold = 5
+
+#sns.pairplot(spoofed_train_data_walking)
+#plt.show()
+
+#print(spoofed_train_data_walking.describe())
+
+#create a function that move column 'spoofed' to the last column
+def move_columns(df, col1, col2):
+    col1 = df.pop(col1)
+    col2 = df.pop(col2)
+    df.insert(len(df.columns)-1, col1.name, col1)
+    df.insert(len(df.columns), col2.name, col2)
+    return df
+
+# how call the function passing as pos the -1 position
+
+
 ########################################## Phase 1 ##########################################
 phase1_out_df_0 = pd.DataFrame()
 phase1_out_df_1 = pd.DataFrame()
 phase1_out_df_2 = pd.DataFrame()
 #group by gnb_id
 for gnb_id, group in train_data_walking.groupby('gnb_id'):
+    group = rolling_mean_std_mad(group, window_size)
     for gnb_id_spoofed, group_spoofed in spoofed_train_data_walking.groupby('gnb_id'):
+        group_spoofed = rolling_mean_std_mad(group_spoofed, window_size)
         if gnb_id == gnb_id_spoofed:
             if gnb_id == 0:
                 phase1_out_df_0 = phase_1(window_size, group, group_spoofed)    
@@ -378,6 +428,10 @@ for gnb_id, group in train_data_walking.groupby('gnb_id'):
 # iterate over the rows of phase1_out_df_0, phase1_out_df_1, phase1_out_df_2, and if a row has spoofed = 1, then set spoofed = 1 for the same row in phase1_out_df_0, phase1_out_df_1, phase1_out_df_2
 
 phase1_out_df_0,phase1_out_df_1,phase1_out_df_2 =  same_spoof_index(phase1_out_df_0, phase1_out_df_1, phase1_out_df_2)
+
+phase1_out_df_0 = move_columns(phase1_out_df_0, 'y_pred', 'spoofed')
+phase1_out_df_1 = move_columns(phase1_out_df_1, 'y_pred', 'spoofed')
+phase1_out_df_2 = move_columns(phase1_out_df_2, 'y_pred', 'spoofed')
 
 phase1_out_df_0.to_csv('phase1_out_df_0.csv', index=False)
 phase1_out_df_1.to_csv('phase1_out_df_1.csv', index=False)
@@ -437,8 +491,8 @@ model.fit([X0, X1, X2], y, epochs=100, batch_size=32, verbose=2)
 test_dataset_walking = new_exp(data_walking)
 spoofed_test_data_walking = spoof_dataframe(test_dataset_walking, percentage, Spoof_magnitude, 1)
 
-
 for gnb_id, group in spoofed_test_data_walking.groupby('gnb_id'):
+    group = rolling_mean_std_mad(group, window_size)
     if gnb_id == 0:
         phase3_out_df_0 = phase_1(window_size, group, group)             
     elif gnb_id == 1:
@@ -454,6 +508,10 @@ for i, df in enumerate([phase3_out_df_0, phase3_out_df_1, phase3_out_df_2]):
     df.drop(columns=cols_to_remove, inplace=True)
 
 phase3_out_df_0, phase3_out_df_1, phase3_out_df_2 = same_spoof_index(phase3_out_df_0, phase3_out_df_1, phase3_out_df_2)
+
+phase3_out_df_0 = move_columns(phase3_out_df_0, 'y_pred', 'spoofed')
+phase3_out_df_1 = move_columns(phase3_out_df_1, 'y_pred', 'spoofed')
+phase3_out_df_2 = move_columns(phase3_out_df_2, 'y_pred', 'spoofed')
 
 phase3_out_df_0.to_csv('phase3_out_df_0.csv', index=False)  
 phase3_out_df_1.to_csv('phase3_out_df_1.csv', index=False)
