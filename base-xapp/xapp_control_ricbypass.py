@@ -28,15 +28,20 @@ def initialize_tx():
     print("Output control socket initialized")
     initialized_tx = True
 
-def receive_from_socket():
+def receive_from_socket(timeout=1):
     global initialized
     global UDPClientSocketIn
     print("receiving")
     if not initialized_rx:
         initialize_rx()
-    bytesAddressPair = UDPClientSocketIn.recvfrom(maxSize)
-    print("received {} bytes".format(len(bytesAddressPair[0])))
-    return bytesAddressPair[0]
+    UDPClientSocketIn.settimeout(timeout)
+    try:
+        bytesAddressPair = UDPClientSocketIn.recvfrom(maxSize)
+        print("received {} bytes".format(len(bytesAddressPair[0])))
+        return bytesAddressPair[0]
+    except socket.timeout:
+        print("Timeout waiting for data from socket")
+        return None
 
 def send_to_socket(data, ip):
     global UDPClientSocketOut

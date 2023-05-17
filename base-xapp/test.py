@@ -21,7 +21,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from keras.utils import to_categorical
 
 def DBConnect():
-    conn = sqlite3.connect('/home/ipalama/work/OAI-colosseum-ric-integration-paloma/xapp-oai/base-xapp/toa_measurements.db')
+    conn = sqlite3.connect('/home/ipalama/work/OAI-colosseum-ric-integration-paloma/xapp-oai/base-xapp/toa_measurements_old.db')
     return conn
 
 def helper_measure_toa(position, gnb_positions, emission_speed, sample_rate):
