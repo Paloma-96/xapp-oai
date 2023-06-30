@@ -3,8 +3,6 @@ import socket
 import socketserver
 import string
 
-localIP = "127.0.0.1"
-remoteIP = "10.75.10.77"
 in_port = 6600
 out_port = 6655
 maxSize = 4096
@@ -31,24 +29,26 @@ def initialize_tx():
 def receive_from_socket(timeout=1):
     global initialized
     global UDPClientSocketIn
-    print("receiving")
+    #print("[SCK] RX")
     if not initialized_rx:
         initialize_rx()
     UDPClientSocketIn.settimeout(timeout)
     try:
         bytesAddressPair = UDPClientSocketIn.recvfrom(maxSize)
-        print("received {} bytes".format(len(bytesAddressPair[0])))
+        #print("[SCK] Received {} bytes".format(len(bytesAddressPair[0])))
         return bytesAddressPair[0]
     except socket.timeout:
-        print("Timeout waiting for data from socket")
+        #print("[SCK] Timeout waiting for data from socket")
         return None
 
 def send_to_socket(data, ip):
     global UDPClientSocketOut
     global initialized
+    #print("[SCK] TX")
     if not initialized_tx:
         initialize_tx()
     global UDPClientSocketOut
     UDPClientSocketOut.sendto(data, (ip,out_port))
+    #print("[SCK] Sent {} bytes".format(len(data)))
     
 

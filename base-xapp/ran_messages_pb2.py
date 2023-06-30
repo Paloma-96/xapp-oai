@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n$oai-oran-protolib/ran_messages.proto\"\xea\x01\n\x0bRAN_message\x12#\n\x08msg_type\x18\x01 \x02(\x0e\x32\x11.RAN_message_type\x12\x39\n\x16ran_indication_request\x18\x02 \x01(\x0b\x32\x17.RAN_indication_requestH\x00\x12;\n\x17ran_indication_response\x18\x03 \x01(\x0b\x32\x18.RAN_indication_responseH\x00\x12\x33\n\x13ran_control_request\x18\x04 \x01(\x0b\x32\x14.RAN_control_requestH\x00\x42\t\n\x07payload\"?\n\x16RAN_indication_request\x12%\n\rtarget_params\x18\x01 \x03(\x0e\x32\x0e.RAN_parameter\"B\n\x17RAN_indication_response\x12\'\n\tparam_map\x18\x01 \x03(\x0b\x32\x14.RAN_param_map_entry\"E\n\x13RAN_control_request\x12.\n\x10target_param_map\x18\x01 \x03(\x0b\x32\x14.RAN_param_map_entry\"\xa0\x01\n\x13RAN_param_map_entry\x12\x1b\n\x03key\x18\x01 \x02(\x0e\x32\x0e.RAN_parameter\x12\x15\n\x0bint64_value\x18\x02 \x01(\x03H\x00\x12\x16\n\x0cstring_value\x18\x03 \x01(\tH\x00\x12\x1d\n\x07ue_list\x18\x04 \x01(\x0b\x32\n.ue_list_mH\x00\x12\x15\n\x03toa\x18\x05 \x01(\x0b\x32\x06.toa_mH\x00\x42\x07\n\x05value\"\x81\x01\n\tue_info_m\x12\x0c\n\x04rnti\x18\x01 \x02(\x05\x12\x12\n\ntbs_avg_dl\x18\x02 \x01(\x02\x12\x12\n\ntbs_avg_ul\x18\x03 \x01(\x02\x12\x16\n\x0etbs_dl_toapply\x18\x04 \x01(\x02\x12\x16\n\x0etbs_ul_toapply\x18\x05 \x01(\x02\x12\x0e\n\x06is_GBR\x18\x06 \x01(\x08\"?\n\tue_list_m\x12\x15\n\rconnected_ues\x18\x01 \x02(\x05\x12\x1b\n\x07ue_info\x18\x02 \x03(\x0b\x32\n.ue_info_m\"3\n\x05toa_m\x12\x0c\n\x04rnti\x18\x01 \x02(\x05\x12\x0f\n\x07toa_val\x18\x02 \x02(\x02\x12\x0b\n\x03snr\x18\x03 \x02(\x02*v\n\x10RAN_message_type\x12\x10\n\x0cSUBSCRIPTION\x10\x01\x12\x16\n\x12INDICATION_REQUEST\x10\x02\x12\x17\n\x13INDICATION_RESPONSE\x10\x03\x12\x0b\n\x07\x43ONTROL\x10\x04\x12\x12\n\x0eSOMETHING_ELSE\x10\x05*E\n\rRAN_parameter\x12\n\n\x06GNB_ID\x10\x01\x12\r\n\tSOMETHING\x10\x02\x12\x0b\n\x07UE_LIST\x10\x03\x12\x0c\n\x08TOA_LIST\x10\x04'
+  serialized_pb=b'\n$oai-oran-protolib/ran_messages.proto\"\xea\x01\n\x0bRAN_message\x12#\n\x08msg_type\x18\x01 \x02(\x0e\x32\x11.RAN_message_type\x12\x39\n\x16ran_indication_request\x18\x02 \x01(\x0b\x32\x17.RAN_indication_requestH\x00\x12;\n\x17ran_indication_response\x18\x03 \x01(\x0b\x32\x18.RAN_indication_responseH\x00\x12\x33\n\x13ran_control_request\x18\x04 \x01(\x0b\x32\x14.RAN_control_requestH\x00\x42\t\n\x07payload\"?\n\x16RAN_indication_request\x12%\n\rtarget_params\x18\x01 \x03(\x0e\x32\x0e.RAN_parameter\"B\n\x17RAN_indication_response\x12\'\n\tparam_map\x18\x01 \x03(\x0b\x32\x14.RAN_param_map_entry\"E\n\x13RAN_control_request\x12.\n\x10target_param_map\x18\x01 \x03(\x0b\x32\x14.RAN_param_map_entry\"\xa0\x01\n\x13RAN_param_map_entry\x12\x1b\n\x03key\x18\x01 \x02(\x0e\x32\x0e.RAN_parameter\x12\x15\n\x0bint64_value\x18\x02 \x01(\x03H\x00\x12\x16\n\x0cstring_value\x18\x03 \x01(\tH\x00\x12\x1d\n\x07ue_list\x18\x04 \x01(\x0b\x32\n.ue_list_mH\x00\x12\x15\n\x03toa\x18\x05 \x01(\x0b\x32\x06.toa_mH\x00\x42\x07\n\x05value\"\x81\x01\n\tue_info_m\x12\x0c\n\x04rnti\x18\x01 \x02(\x05\x12\x12\n\ntbs_avg_dl\x18\x02 \x01(\x02\x12\x12\n\ntbs_avg_ul\x18\x03 \x01(\x02\x12\x16\n\x0etbs_dl_toapply\x18\x04 \x01(\x02\x12\x16\n\x0etbs_ul_toapply\x18\x05 \x01(\x02\x12\x0e\n\x06is_GBR\x18\x06 \x01(\x08\"?\n\tue_list_m\x12\x15\n\rconnected_ues\x18\x01 \x02(\x05\x12\x1b\n\x07ue_info\x18\x02 \x03(\x0b\x32\n.ue_info_m\"3\n\x05toa_m\x12\x0c\n\x04rnti\x18\x01 \x02(\x05\x12\x0f\n\x07toa_val\x18\x02 \x03(\x05\x12\x0b\n\x03snr\x18\x03 \x03(\x05*v\n\x10RAN_message_type\x12\x10\n\x0cSUBSCRIPTION\x10\x01\x12\x16\n\x12INDICATION_REQUEST\x10\x02\x12\x17\n\x13INDICATION_RESPONSE\x10\x03\x12\x0b\n\x07\x43ONTROL\x10\x04\x12\x12\n\x0eSOMETHING_ELSE\x10\x05*E\n\rRAN_parameter\x12\n\n\x06GNB_ID\x10\x01\x12\r\n\tSOMETHING\x10\x02\x12\x0b\n\x07UE_LIST\x10\x03\x12\x0c\n\x08TOA_LIST\x10\x04'
 )
 
 _RAN_MESSAGE_TYPE = _descriptor.EnumDescriptor(
@@ -454,15 +454,15 @@ _TOA_M = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='toa_val', full_name='toa_m.toa_val', index=1,
-      number=2, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=float(0),
+      number=2, type=5, cpp_type=1, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='snr', full_name='toa_m.snr', index=2,
-      number=3, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=float(0),
+      number=3, type=5, cpp_type=1, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
