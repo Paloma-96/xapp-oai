@@ -1,26 +1,28 @@
 
-gnb_positions = [[0, 9], [12, 9], [6, 0]]
-
 gNB 0 position: [0, 9]
-gNB 1 position: [12, 9]
-gNB 2 position: [6, 0]
+gNB 1 position: [7, 9]
+gNB 2 position: [3.5, 0]
 
 
 EXP 1
-Position [0, 0]: This position is at the center of the coverage area and will provide a good baseline for localization accuracy.
+Position [0, 0]
+
+5 luglio 12
 
 EXP 2
-Position [12, 0]: This position is at the edge of the coverage area and will help evaluate localization performance near the boundary.
+Position [7, 0]
+
+5 luglio 12:07
 
 EXP 3
-Position [6, 9]: This position is at a lower elevation and will help evaluate localization performance at different heights.
+Position [3.5, 9]
+
+5 luglio 12:14
 
 EXP 4
-Position [6, 4.5]: This position is at a different horizontal distance from the gNBs and will help evaluate localization performance at various distances.
+Position [7, 4.5]
 
+5 luglio 12:21  ultime misure da togliere, UE era in [3.5,9] e non in [7,4.5]
 
-
-
-EXP 0
-
-con una radio (b210) verificare che applicando una calibrazione iniziale e togliendo componente ciclica con wavelet riesco ad ottenere nel tempo una stima di TOA buona muovendo il telefono
+EXP 5
+Position [3.5, 12]

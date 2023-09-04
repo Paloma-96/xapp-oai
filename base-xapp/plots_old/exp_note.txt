@@ -1,0 +1,28 @@
+
+gNB 0 position: [0, 9]
+gNB 1 position: [7, 9]
+gNB 2 position: [3.5, 0]
+
+
+EXP 1
+Position [0, 0]: This position is at the center of the coverage area and will provide a good baseline for localization accuracy.
+
+5 luglio 12
+
+EXP 2
+Position [7, 0]: This position is at the edge of the coverage area and will help evaluate localization performance near the boundary.
+
+5 luglio 12:07
+
+EXP 3
+Position [3.5, 9]: This position is at a lower elevation and will help evaluate localization performance at different heights.
+
+5 luglio 12:14
+
+EXP 4
+Position [7, 4.5]: This position is at a different horizontal distance from the gNBs and will help evaluate localization performance at various distances.
+
+5 luglio 12:21  ultime misure da togliere, UE era in [3.5,9] e non in [7,4.5]
+
+EXP 5
+Position [3.5, 12]: This position is at a higher elevation and will help evaluate localization performance at different heights.

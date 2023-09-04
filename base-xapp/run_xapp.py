@@ -41,7 +41,7 @@ def db_init():
 def mongodb_init():
     client = MongoClient('mongodb://root:rootpassword@localhost:27017/')
     db = client['toa_measurements']
-    collection = db['toa_measurements']
+    collection = db['toa_measurements_test']
     return collection
 
 def get_data_from_gnb(ip, conn, c, current_datetime, event):
